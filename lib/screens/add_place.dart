@@ -1,5 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/places.dart';
 import '../widgets/image_input.dart';
 
 class AddPlace extends StatefulWidget {
@@ -10,6 +14,36 @@ class AddPlace extends StatefulWidget {
 
 class _AddPlaceState extends State<AddPlace> {
   final _titleController = TextEditingController();
+  File _pickedImage;
+
+  void _selectImage(File pickedImage) {
+    _pickedImage = pickedImage;
+  }
+
+  void _savePlace(BuildContext ctx) {
+    if (_titleController.text.isEmpty || _pickedImage == null) {
+      Scaffold.of(ctx).hideCurrentSnackBar();
+      Scaffold.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text(
+            _titleController.text.isEmpty && _pickedImage == null
+                ? 'Title and Image not Provided!'
+                : _pickedImage == null
+                    ? 'Image not Provided!'
+                    : 'Title not Provided!',
+            textAlign: TextAlign.center,
+          ),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+    Provider.of<Places>(context, listen: false).appPlace(
+      _titleController.text,
+      _pickedImage,
+    );
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +60,10 @@ class _AddPlaceState extends State<AddPlace> {
                 padding: EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    Container(height: 250, child: ImageInput()),
+                    Container(
+                      height: 250,
+                      child: ImageInput(_selectImage),
+                    ),
                     SizedBox(height: 20),
                     TextField(
                       decoration: InputDecoration(labelText: 'Title'),
@@ -37,13 +74,14 @@ class _AddPlaceState extends State<AddPlace> {
               ),
             ),
           ),
-          RaisedButton.icon(
-            label: Text('Add Place'),
-            icon: Icon(Icons.add),
-            onPressed: () {},
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            color: Theme.of(context).accentColor,
-          )
+          Builder(
+              builder: (BuildContext ctx) => RaisedButton.icon(
+                    label: Text('Add Place'),
+                    icon: Icon(Icons.add),
+                    onPressed: () => _savePlace(ctx),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    color: Theme.of(context).accentColor,
+                  ))
         ],
       ),
     );
