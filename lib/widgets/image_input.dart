@@ -21,6 +21,7 @@ class _ImageInputState extends State<ImageInput> {
       source: ImageSource.camera,
       maxWidth: 600,
     );
+    if (imageFile == null) return;
     setState(() {
       _image = File(imageFile.path);
     });
@@ -40,6 +41,7 @@ class _ImageInputState extends State<ImageInput> {
           height: 200,
           alignment: Alignment.center,
           decoration: BoxDecoration(
+            color: Colors.white,
             border: Border.all(
               width: 1,
               color: Colors.grey,

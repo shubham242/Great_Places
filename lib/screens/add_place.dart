@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/places.dart';
 import '../widgets/image_input.dart';
+import '../widgets/location_input.dart';
 
 class AddPlace extends StatefulWidget {
   static const routeName = '/add-place';
@@ -38,7 +39,7 @@ class _AddPlaceState extends State<AddPlace> {
       );
       return;
     }
-    Provider.of<Places>(context, listen: false).appPlace(
+    Provider.of<Places>(context, listen: false).addPlace(
       _titleController.text,
       _pickedImage,
     );
@@ -57,31 +58,33 @@ class _AddPlaceState extends State<AddPlace> {
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
                 child: Column(
                   children: [
                     Container(
                       height: 250,
                       child: ImageInput(_selectImage),
                     ),
-                    SizedBox(height: 20),
                     TextField(
                       decoration: InputDecoration(labelText: 'Title'),
                       controller: _titleController,
                     ),
+                    SizedBox(height: 20),
+                    LocationInput(),
                   ],
                 ),
               ),
             ),
           ),
           Builder(
-              builder: (BuildContext ctx) => RaisedButton.icon(
-                    label: Text('Add Place'),
-                    icon: Icon(Icons.add),
-                    onPressed: () => _savePlace(ctx),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    color: Theme.of(context).accentColor,
-                  ))
+            builder: (BuildContext ctx) => RaisedButton.icon(
+              label: Text('Add Place'),
+              icon: Icon(Icons.add),
+              onPressed: () => _savePlace(ctx),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              color: Theme.of(context).accentColor,
+            ),
+          ),
         ],
       ),
     );
