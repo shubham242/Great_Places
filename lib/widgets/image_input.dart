@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart' as syspath;
 
 class ImageInput extends StatefulWidget {
   final Function onSelectImage;
@@ -17,18 +15,11 @@ class _ImageInputState extends State<ImageInput> {
 
   Future<void> _takePicture() async {
     final picker = ImagePicker();
-    final imageFile = await picker.getImage(
-      source: ImageSource.camera,
-      maxWidth: 600,
-    );
+    final imageFile = await picker.pickImage(source: ImageSource.gallery);
     if (imageFile == null) return;
     setState(() {
       _image = File(imageFile.path);
     });
-    final appDir = await syspath.getApplicationDocumentsDirectory();
-    final fileName = path.basename(imageFile.path);
-    final savedImage =
-        await File(imageFile.path).copy('${appDir.path}/$fileName');
     widget.onSelectImage(_image);
   }
 
@@ -37,7 +28,6 @@ class _ImageInputState extends State<ImageInput> {
     return Column(
       children: [
         Container(
-          width: 200,
           height: 200,
           alignment: Alignment.center,
           decoration: BoxDecoration(
@@ -50,10 +40,10 @@ class _ImageInputState extends State<ImageInput> {
           child: _image != null
               ? Image.file(
                   _image,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   width: double.infinity,
                 )
-              : Text('No Image'),
+              : Image.asset('assets/no-image.png'),
         ),
         Container(
           child: FlatButton.icon(
@@ -64,7 +54,7 @@ class _ImageInputState extends State<ImageInput> {
               color: Theme.of(context).primaryColor,
             ),
             label: Text(
-              'Take Picture',
+              'Select Picture',
               style: TextStyle(color: Theme.of(context).primaryColor),
             ),
             onPressed: _takePicture,
